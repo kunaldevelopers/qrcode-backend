@@ -110,8 +110,7 @@ router.get("/:qrCodeId/:trackingId", async (req, res) => {
           <body>
             <div class="container">
               <h2>🔒 Password Protected QR Code</h2>
-              <p>This QR code is password protected. Please enter the password to continue.</p>
-              <form id="passwordForm" method="POST" action="/api/analytics/verify-password/${qrCode._id}">
+              <p>This QR code is password protected. Please enter the password to continue.</p>              <form id="passwordForm">
                 <input type="hidden" name="trackingId" value="${trackingId}">
                 <div class="form-group">
                   <input type="password" name="password" placeholder="Enter password" required>
@@ -119,14 +118,16 @@ router.get("/:qrCodeId/:trackingId", async (req, res) => {
                 <button type="submit">Submit</button>
               </form>
               <div id="error" class="error" style="display: none;"></div>
-            </div>
-            <script>
+            </div>            <script>
               document.getElementById('passwordForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 try {
                   const formData = new FormData(e.target);
-                  const response = await fetch(e.target.action, {
+                  // Use absolute URL for API endpoint                  const baseUrl = window.location.origin.includes('localhost') 
+                    ? 'http://localhost:5000' 
+                    : 'https://qr-generator-advanced.onrender.com';
+                  const response = await fetch(baseUrl + '/api/analytics/verify-password/' + '${qrCode._id}', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
