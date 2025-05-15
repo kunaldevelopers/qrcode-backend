@@ -15,7 +15,15 @@ const authMiddleware = require("./middleware/auth");
 const app = express();
 
 // Middleware
-app.use(cors());
+// Configure CORS to allow requests from the Netlify frontend
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "https://qr-code-advance.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 // Increase payload size limit to 50MB for handling large QR code images and bulk operations
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));

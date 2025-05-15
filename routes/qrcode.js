@@ -112,12 +112,10 @@ router.post("/", authMiddleware, async (req, res) => {
           "Password validation failed during QR creation. Received security object:",
           JSON.stringify(security, null, 2)
         );
-        return res
-          .status(400)
-          .json({
-            error:
-              "Password is required and cannot be empty when password protection is enabled.",
-          });
+        return res.status(400).json({
+          error:
+            "Password is required and cannot be empty when password protection is enabled.",
+        });
       }
       passwordValue = security.password.trim(); // Use trimmed password
       console.log(
@@ -143,9 +141,12 @@ router.post("/", authMiddleware, async (req, res) => {
     let qrTextForImage = text;
     let finalTrackingUrl = null;
     const temporaryId = new mongoose.Types.ObjectId();
-
     if (enableTracking) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      // Use RENDER_EXTERNAL_URL when in production, fallback to the request's origin
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://qr-generator-advanced.onrender.com"
+          : `${req.protocol}://${req.get("host")}`;
       finalTrackingUrl = createTrackingUrl(baseUrl, temporaryId.toString());
       qrTextForImage = finalTrackingUrl;
     }
@@ -450,9 +451,12 @@ router.post("/bulk", authMiddleware, async (req, res) => {
           const temporaryId = new mongoose.Types.ObjectId();
           let qrTextForImage = qr.text; // Default to original text for QR image
           let finalTrackingUrl = null;
-
           if (enableTracking) {
-            const baseUrl = `${req.protocol}://${req.get("host")}`;
+            // Use RENDER_EXTERNAL_URL when in production, fallback to the request's origin
+            const baseUrl =
+              process.env.NODE_ENV === "production"
+                ? "https://qr-generator-advanced.onrender.com"
+                : `${req.protocol}://${req.get("host")}`;
             finalTrackingUrl = createTrackingUrl(
               baseUrl,
               temporaryId.toString()
